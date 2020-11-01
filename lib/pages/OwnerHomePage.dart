@@ -9,7 +9,8 @@ class OwnerHomePage extends StatefulWidget {
 }
 
 class OwnerHomePageState extends State<OwnerHomePage> {
-  String nom, prenom, phone, email;
+  String nom, prenom, phone, email, img;
+  String imgProfile;
 
   Future<String> getData(String data) async {
     var result = await http_get('users/getUsername/${data}');
@@ -20,13 +21,20 @@ class OwnerHomePageState extends State<OwnerHomePage> {
         prenom = in_users["prenom"].toString();
         phone = in_users["phone"].toString();
         email = in_users["email"].toString();
+        img = in_users["image"].toString();
+        imgProfile = "http://192.168.137.60:3000/uploads/${img}";
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     getData(widget.username);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text("Profile"),
@@ -37,11 +45,13 @@ class OwnerHomePageState extends State<OwnerHomePage> {
             SizedBox(
               height: 20,
             ),
-            Image.asset(
-              "Assets/user.png",
-              height: 100,
-              width: 100,
-            ),
+            imgProfile != null
+                ? Image.network(
+                    imgProfile,
+                    height: 100,
+                    width: 100,
+                  )
+                : Container(),
             SizedBox(
               height: 20,
             ),

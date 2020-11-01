@@ -15,6 +15,7 @@ class SingIn extends StatefulWidget {
 class SingInState extends State<SingIn> {
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
+  bool visib = true;
 
   String response = "";
   authUser() async {
@@ -35,8 +36,38 @@ class SingInState extends State<SingIn> {
       setState(() {
         response = res.data.toString();
         print(response);
+        _showMyDialog();
       });
     }
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Incorrect Username or passwrd.'),
+                Text('Try again or click Forgot password to reset it.'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            OutlineButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                password.clear();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -121,6 +152,8 @@ class SingInState extends State<SingIn> {
                                       keyboardType: TextInputType.emailAddress,
                                       decoration: InputDecoration(
                                           hintText: "Email or Username",
+                                          prefixIcon:
+                                              Icon(Icons.person_outline),
                                           hintStyle:
                                               TextStyle(color: Colors.grey),
                                           border: InputBorder.none),
@@ -134,9 +167,20 @@ class SingInState extends State<SingIn> {
                                                 color: Colors.grey[200]))),
                                     child: TextField(
                                       controller: password,
-                                      obscureText: true,
+                                      obscureText: visib,
                                       decoration: InputDecoration(
                                           hintText: "Password",
+                                          prefixIcon: Icon(Icons.lock),
+                                          suffixIcon: IconButton(
+                                            icon: Icon(visib
+                                                ? Icons.visibility_off
+                                                : Icons.visibility),
+                                            onPressed: () {
+                                              setState(() {
+                                                visib = !visib;
+                                              });
+                                            },
+                                          ),
                                           hintStyle:
                                               TextStyle(color: Colors.grey),
                                           border: InputBorder.none),
@@ -145,10 +189,6 @@ class SingInState extends State<SingIn> {
                                 ],
                               ),
                             )),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(response),
                         SizedBox(
                           height: 16,
                         ),
